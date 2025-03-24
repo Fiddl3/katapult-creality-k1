@@ -1,6 +1,6 @@
 # Kconfig settings for STM32 processors
 
-if MACH_STM32
+if MACH_STM32 ||  MACH_GD32
 
 config STM32_SELECT
     bool
@@ -14,6 +14,7 @@ config STM32_SELECT
     select HAVE_STRICT_TIMING
     select HAVE_CHIPID
     select HAVE_STEPPER_BOTH_EDGE
+    select MACH_STM32F1 if MACH_GD32F30x
 
 config BOARD_DIRECTORY
     string
@@ -25,7 +26,8 @@ config BOARD_DIRECTORY
 ######################################################################
 
 choice
-    prompt "Processor model"
+    prompt "Processor model"   
+    depends on MACH_STM32
     config MACH_STM32F103
         bool "STM32F103"
         select MACH_STM32F1
@@ -89,6 +91,51 @@ choice
         select MACH_STM32L4
 endchoice
 
+
+choice
+    prompt "Processor model"    
+    depends on MACH_GD32
+    config MACH_GD32F303XB
+        bool "gd32f303xb"
+        select MACH_GD32F30x
+    config MACH_GD32F303XC
+        bool "gd32f303xc"
+        select MACH_GD32F30x
+    config MACH_GD32F303XE
+        bool "gd32f303xe"
+        select MACH_GD32F30x
+    config MACH_GD32F303XG
+        bool "gd32f303xg"
+        select MACH_GD32F30x
+    config MACH_GD32F303XI
+        bool "gd32f303xi"
+        select MACH_GD32F30x
+    config MACH_GD32F303XK
+        bool "gd32f303xk"
+        select MACH_GD32F30x
+    config MACH_GD32F305XB
+        bool "gd32f305xb"
+        select MACH_GD32F30x
+    config MACH_GD32F305XC
+        bool "gd32f305xc"
+        select MACH_GD32F30x
+    config MACH_GD32F305XE
+        bool "gd32f305xe"
+        select MACH_GD32F30x
+    config MACH_GD32F305XG
+        bool "gd32f305xg"
+        select MACH_GD32F30x
+    config MACH_GD32F307XC
+        bool "gd32f307xc"
+        select MACH_GD32F30x
+    config MACH_GD32F307XE
+        bool "gd32f307xe"
+        select MACH_GD32F30x
+    config MACH_GD32F307XG
+        bool "gd32f307xg"
+        select MACH_GD32F30x
+endchoice
+
 config MACH_STM32F103x6
     depends on LOW_LEVEL_OPTIONS && MACH_STM32F103
     bool "Only 10KiB of RAM (for rare stm32f103x6 variant)"
@@ -114,6 +161,8 @@ config MACH_STM32F0x2 # F042, F072 series
 config MACH_STM32F4x5 # F405, F407, F429 series
     bool
 config MACH_STM32L4
+    bool
+config MACH_GD32F30x
     bool
 config HAVE_STM32_USBFS
     bool
@@ -151,6 +200,19 @@ config MCU
     default "stm32h743xx" if MACH_STM32H743
     default "stm32h750xx" if MACH_STM32H750
     default "stm32l412xx" if MACH_STM32L412
+    default "gd32f303xb" if MACH_GD32F303XB
+    default "gd32f303xc" if MACH_GD32F303XC
+    default "gd32f303xe" if MACH_GD32F303XE
+    default "gd32f303xg" if MACH_GD32F303XG
+    default "gd32f303xi" if MACH_GD32F303XI
+    default "gd32f303xk" if MACH_GD32F303XK
+    default "gd32f305xb" if MACH_GD32F305XB
+    default "gd32f305xc" if MACH_GD32F305XC
+    default "gd32f305xe" if MACH_GD32F305XE
+    default "gd32f305xg" if MACH_GD32F305XG
+    default "gd32f307xc" if MACH_GD32F307XC
+    default "gd32f307xe" if MACH_GD32F307XE
+    default "gd32f307xg" if MACH_GD32F307XG   
 
 config CLOCK_FREQ
     int
@@ -165,6 +227,7 @@ config CLOCK_FREQ
     default 150000000 if MACH_STM32G431
     default 400000000 if MACH_STM32H7 # 400Mhz is max Klipper currently supports
     default 80000000 if MACH_STM32L412
+    default 72000000 if MACH_GD32F30x
 
 config FLASH_SIZE
     hex
@@ -177,6 +240,12 @@ config FLASH_SIZE
     default 0x20000 if MACH_STM32G0 || MACH_STM32G431
     default 0x20000 if MACH_STM32H750
     default 0x200000 if MACH_STM32H743
+    default 0x20000 if (MACH_GD32F303XB || MACH_GD32F305XB)
+    default 0x40000 if (MACH_GD32F303XC || MACH_GD32F305XC || MACH_GD32F307XC)
+    default 0x80000 if (MACH_GD32F303XE || MACH_GD32F305XE || MACH_GD32F307XE)
+    default 0x100000 if (MACH_GD32F303XG || MACH_GD32F305XG || MACH_GD32F307XG)
+    default 0x200000 if MACH_GD32F303XI
+    default 0x300000 if MACH_GD32F303XK
 
 config FLASH_BOOT_ADDRESS
     hex
@@ -201,6 +270,10 @@ config RAM_SIZE
     default 0x20000 if MACH_STM32F4x5 || MACH_STM32F446
     default 0x24000 if MACH_STM32G0Bx
     default 0x20000 if MACH_STM32H7
+    default 0x8000 if (MACH_GD32F303XB || MACH_GD32F305XB)
+    default 0xC000 if (MACH_GD32F303XC || MACH_GD32F305XC || MACH_GDF307XC)
+    default 0x10000 if (MACH_GD32F303XE || MACH_GD32F305XE || MACH_GD32F307XE)
+    default 0x18000 if (MACH_GD32F303XG || MACH_GD32F303XI || MACH_GD32F303XK)
 
 config STACK_SIZE
     int
@@ -208,7 +281,7 @@ config STACK_SIZE
 
 config STM32F103GD_DISABLE_SWD
     bool "Disable SWD at startup (for GigaDevice stm32f103 clones)"
-    depends on MACH_STM32F103 && LOW_LEVEL_OPTIONS
+    depends on MACH_GD32F30x && LOW_LEVEL_OPTIONS
     default n
     help
         The GigaDevice clone of the STM32F103 may not be able to
@@ -259,12 +332,20 @@ choice
         bool "16KiB bootloader (HID Bootloader)" if MACH_STM32F207 || MACH_STM32F401 || MACH_STM32F4x5 || MACH_STM32F103 || MACH_STM32F072
     config STM32_FLASH_START_20000
         bool "128KiB bootloader (SKR SE BX v2.0)" if MACH_STM32H743 || MACH_STM32H723
+    config STM32_FLASH_START_3000 
+        bool "12KiB bootloader (Creality K1 series)" if MACH_GD32F30x || MACH_STM32F103 
+        select MACH_CK1BOOT
 endchoice
+
+config MACH_CK1BOOT
+    bool
+
 config FLASH_APPLICATION_ADDRESS
     hex
     default 0x8000800 if STM32_FLASH_START_800
     default 0x8001000 if STM32_FLASH_START_1000
     default 0x8002000 if STM32_FLASH_START_2000
+    default 0x8003000 if STM32_FLASH_START_3000
     default 0x8004000 if STM32_FLASH_START_4000
     default 0x8005000 if STM32_FLASH_START_5000
     default 0x8007000 if STM32_FLASH_START_7000
@@ -301,7 +382,7 @@ choice
     config STM32_CLOCK_REF_32M
         bool "32 MHz crystal"
     config STM32_CLOCK_REF_INTERNAL
-        bool "Internal clock"
+        bool "Internal clock" if !MACH_GD32F30x
 endchoice
 config CLOCK_REF_FREQ
     int

@@ -22,6 +22,10 @@ SECTIONS
         _text_vectortable_start = .;
         KEEP(*(.vector_table))
         _text_vectortable_end = .;
+#ifdef CONFIG_MACH_CK1BOOT
+        . = _text_vectortable_start + 0x200;
+        KEEP(*(SV_SECTION))
+#endif
 #if CONFIG_LAUNCH_APP_ADDRESS > CONFIG_FLASH_APPLICATION_ADDRESS
         . = CONFIG_LAUNCH_APP_ADDRESS - CONFIG_FLASH_APPLICATION_ADDRESS ;
 #endif

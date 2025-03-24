@@ -14,6 +14,11 @@
 #include "deployer.h" // deployer_is_active
 #include "sched.h" // sched_check_periodic
 
+//for creality bootloader
+#ifdef CONFIG_MACH_CK1BOOT
+    static const char software_version[32] __attribute__ ((section("SV_SECTION"))) __attribute__((used)) = "noz0_123_000";
+#endif
+
 // The CanBoot "deployer application" is running
 int
 deployer_is_active(void)
